@@ -7,7 +7,7 @@
 
 
 ## Catagory: DAX Syntax and Notes:
-1. Show Y Axis 
+1. Show Y Axis Constant Line only if the user selects a material ID
 - Reorder Line = IF(
     HASONEVALUE('Material Base'[materialID]),
     CALCULATE(
@@ -15,3 +15,4 @@
         ALLEXCEPT('Rolling Calendar','Rolling Calendar'[Date])
         ), BLANK()
         )
+2. 
