@@ -18,17 +18,6 @@
 2. Similar to IfNull, return 0 if calculation is null.
 - for example:
  - RowsCardCount = COALESCE(
-        CALCULATE(
-        COUNTROWS(
-            FILTER(
-                VALUES('Material Base'[MaterialPlant]),
-                'Measure Table'[PreviousY Daily Consumption] <> 0 &&
-                (
-                    [CurrentDaySOH2] + [OpenPOQty] < 'MRP Forecast'[ForecastReq] ||
-                    [Days Cover] < [Planned Delivery Days] ||
-                    [CurrentDaySOH2] + [OpenPOQty] < calculate(SUM('Material Base'[ReorderPoint]))
-                )
-            ) 
-        )
+        CALCULATE( ......
     ),0
     )
