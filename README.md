@@ -21,3 +21,21 @@
         CALCULATE( ......
     ),0
     )
+
+
+3. Return the max consumption for the past 12 months or your logic.
+Max_Consumption_By_Month = 
+MAXX(
+    FILTER(
+        SUMMARIZE(
+            FILTER(
+                'Movement Sum',
+                'Movement Sum'[Date] >= TODAY() - 90 && 'Movement Sum'[Date] <= TODAY()
+            ),
+            'Movement Sum'[Month], 
+            "Total Consumption", SUM('Movement Sum'[TotalConsumption])
+        ),
+        [Total Consumption] <> BLANK()
+    ),
+    [Total Consumption]
+)
