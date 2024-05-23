@@ -39,3 +39,25 @@ MAXX(
     ),
     [Total Consumption]
 )
+
+4. 验证slicer是不是被multi-selected 需要用count计数，不能只用isfiltered
+   例子：COUNTROWS(VALUES('DimCalendar'[dateFiscalYear])) > 1
+
+5. 做parameter排序时，用rankx先给列表排虚拟号
+   例子：Material Rank = 
+    CALCULATE(
+        RANKX(
+            FILTER(
+                ALL('Dim Material'[MaterialDescription]), 
+                'Dim Material'[MaterialDescription] <> BLANK()
+            ),
+            [Total_Spend_inNZD_onlymaterial]
+        )
+    )
+   然后在显示数值DAX中：Selected Year Material Spend = CALCULATE(
+                        [Total_Spend_inNZD_onlymaterial], ALL('DimCalendar'[dateFiscalYear]),'DimCalendar'[dateFiscalYear] = VALUES('Year Selection'[Parameter])
+                        , FILTER(VALUES('Dim Material'[MaterialDescription]), 
+                        [Material Rank] <= SELECTEDVALUE('Ranking Parameter'[Parameter]) && 'Dim Material'[MaterialDescription] <> BLANK())
+                    ) 将显示的rankx值和parameter进行对比即可
+   
+
