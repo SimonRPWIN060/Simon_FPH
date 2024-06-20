@@ -127,4 +127,6 @@ MAXX(
         'DimCalendar'[dateFiscalYear], 
         'DimCalendar'[dateFullDate], TODAY()
     )
-    
+
+12. Table 同一列，小于1显示小数，大于1显示整数：
+    加入formating "0.##;(0.##);0.##" 到dynamic 格式中
