@@ -129,4 +129,12 @@ MAXX(
     )
 
 12. Table 同一列，小于1显示小数，大于1显示整数：
-    加入formating "0.##;(0.##);0.##" 到dynamic 格式中
+    加入formating "0.##;(0.##);0.##" 到dynamic 格式中，同时dax更改formating：
+    Avg_3month_consumption = 
+      VAR AvgConsumption = 'Movement Sum'[TotalConsumption_3month] / 13
+      RETURN
+      IF(
+          AvgConsumption < 1,
+          ROUND(AvgConsumption, 2),
+          int(AvgConsumption)
+      )
