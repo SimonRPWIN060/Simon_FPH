@@ -134,7 +134,74 @@ MAXX(
       VAR AvgConsumption = 'Movement Sum'[TotalConsumption_3month] / 13
       RETURN
       IF(
-          AvgConsumption < 1,
-          ROUND(AvgConsumption, 2),
-          int(AvgConsumption)
+
+13. DAX一些notes，随便看。
+    
+      -----------------------------
+      
+      1. approximatedistinctcount(column) - 不重复值的计数
+      2. Countax 例子 = COUNTAX(FILTER('Reseller',[Status]="Active"),[Phone])  - 筛选条件的统计计数
+      MAX和MAXA区别 - MAXA可以处理（True/False）- MAXX可以把多表的DAX写一起进行计算 MAXX(InternetSales, InternetSales[TaxAmt]+ InternetSales[Freight])  
+      3. datevalue(date_text) - 转换日期格式
+      4. Networkdays - 排除非工作日和holiday 例子： = NETWORKDAYS (
+      					       DATE ( 2022, 5, 28 ),
+              				       DATE ( 2022, 5, 30 ),
+              					1,
+              					{
+                  					DATE ( 2022, 5, 30 )
+              					}
+          							)
+      5. Allcrossfiltered - 排除表中筛选器影响
+      6. Early(table(column)) - 取当前行的列，可以与其他的列比较，然后返回一个count： 例如：
+      = COUNTROWS(FILTER(ProductSubcategory, EARLIER(ProductSubcategory[TotalSubcategorySales])<ProductSubcategory[TotalSubcategorySales]))+1
+      
+      7. selectedvalue相当于hasonevalue+values
+      8. Offset - SalesRelativeToPreviousMonth = [SalesAmount] - CALCULATE(SUM([SalesAmount]), OFFSET(-1, ROWS, HIGHESTPARENT)) - 计算比较与上个月的差值（视觉上上一行）
+      
+      DEFINE
+      VAR vRelation = SUMMARIZECOLUMNS ( 
+                          DimProductCategory[EnglishProductCategoryName], 
+                          DimDate[CalendarYear], 
+                          "CurrentYearSales", SUM(FactInternetSales[SalesAmount]) 
+                        )
+      EVALUATE
+      ADDCOLUMNS (
+          vRelation, 
+          "PreviousYearSales", 
+          SELECTCOLUMNS(
+              OFFSET ( 
+                      -1, 
+                      vRelation, 
+                      ORDERBY([CalendarYear]), 
+                      PARTITIONBY([EnglishProductCategoryName])
+              ),
+              [CurrentYearSales]
+          )
       )
+      
+      9. TopN:
+      = SUMX(
+              TOPN(
+                  10, 
+                  SUMMARIZE(
+                          InternetSales, 
+                          InternetSales[ProductKey], 
+                          "TotalSales", SUM(InternetSales[SalesAmount])
+                  ),
+                  [TotalSales], DESC
+              ),
+              [TotalSales]
+      )
+      
+      10. Treatas - 将A的删选条件同时应用给B
+      CALCULATE(
+      SUM(Sales[Amount]), 
+      TREATAS(VALUES(DimProduct1[ProductCategory]), DimProduct2[ProductCategory])
+      )
+      
+          
+                AvgConsumption < 1,
+                ROUND(AvgConsumption, 2),
+                int(AvgConsumption)
+            )
+      -----------------------------
